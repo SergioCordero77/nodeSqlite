@@ -60,6 +60,7 @@ app.post("/api/AddArtist",  (req, res) => {
   });
 });
 
+//Eliminar
 app.delete("/api/DeleteArtist",  (req, res) => {
   const name = req.body.data;
   db.run("DELETE FROM artists WHERE name = ?", [name], (error) => {
