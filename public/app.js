@@ -5,7 +5,7 @@ const artistOutput = document.getElementById("artist-output");
 const artistNameInput = document.getElementById("artist-name");
 
 const artistToDeleteInput = document.getElementById("artist-delete");
-const deleteSongButton = document.getElementById("delete-artist");
+const deleteArtistButton = document.getElementById("delete-artist");
 
 const artistDropdown = document.getElementById("artist-dropdown");
 const albumDropdown = document.getElementById("album-dropdown");
@@ -73,7 +73,7 @@ loadButton.addEventListener("click", async () => {
 });
 
 //ELIMINAR ARTISTA
-deleteSongButton.addEventListener("click", async () => {
+deleteArtistButton.addEventListener("click", async () => {
   let name = artistToDeleteInput.value.trim();
   if (!name) return;
 
@@ -146,7 +146,7 @@ addAlbumButton.addEventListener("click", async (event) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ name, artist })
+    body: JSON.stringify({ name, artist_id: artist })
   });
 
   const message = await res.text();
@@ -188,7 +188,7 @@ addSongButton.addEventListener("click", async (event) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ name, album })
+    body: JSON.stringify({ name, album_id: album })
   });
 
   const message = await res.text();
