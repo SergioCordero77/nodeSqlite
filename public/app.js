@@ -5,12 +5,22 @@ const artistOutput = document.getElementById("artist-output");
 const artistNameInput = document.getElementById("artist-name");
 
 const artistToDeleteInput = document.getElementById("artist-delete");
-const deleteButton = document.getElementById("delete-artist");
+const deleteSongButton = document.getElementById("delete-artist");
 
 const artistDropdown = document.getElementById("artist-dropdown");
+const albumDropdown = document.getElementById("album-dropdown");
 
 const albumInput = document.getElementById("album-name");
 const addAlbumButton = document.getElementById("add-album");
+
+const albumToDeleteInput = document.getElementById("album-delete");
+const deleteAlbumButton = document.getElementById("delete-album");
+
+const songInput = document.getElementById("song-name");
+const addSongButton = document.getElementById("add-song");
+
+const songToDeleteInput = document.getElementById("song-delete");
+const deleteSongButton = document.getElementById("delete-song");
 
 //AGEGIR ARTISTA
 form.addEventListener("submit", async (event) => {
@@ -63,7 +73,7 @@ loadButton.addEventListener("click", async () => {
 });
 
 //ELIMINAR ARTISTA
-deleteButton.addEventListener("click", async () => {
+deleteSongButton.addEventListener("click", async () => {
   let name = artistToDeleteInput.value.trim();
   if (!name) return;
 
@@ -121,8 +131,8 @@ async function consultArtistTable(table){
   return json.result;
 }
 
-//Afegir Album
-addAlbumButton.addEventListener("submit", async (event) => {
+//AFEGIR ALBUM
+addAlbumButton.addEventListener("click", async (event) => {
   event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
 
   const name = albumInput.value.trim();
@@ -137,6 +147,67 @@ addAlbumButton.addEventListener("submit", async (event) => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ name, artist })
+  });
+
+  const message = await res.text();
+  artistOutput.textContent = message;
+  if (res.ok) form.reset();
+});
+
+//ELIMINAR ALBUM
+deleteAlbumButton.addEventListener("click", async () => {
+  let name = albumToDeleteInput.value.trim();
+  if (!name) return;
+
+  //Envia petició al servidor
+  const res = await fetch("/api/DeleteAlbum", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ data: name })
+  });
+
+  const message = await res.text();
+  artistOutput.textContent = message;
+  if (res.ok) form.reset();
+});
+
+//AFEGIR CANÇÓ
+addSongButton.addEventListener("click", async (event) => {
+  event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
+
+  const name = songInput.value.trim();
+  const album = albumDropdown.value;
+
+  if (!name || !album) return;
+  
+  //Envia cançó al backend
+  const res = await fetch("/api/AddSongs", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, album })
+  });
+
+  const message = await res.text();
+  artistOutput.textContent = message;
+  if (res.ok) form.reset();
+});
+
+//ELIMINAR CANÇÓ
+deleteSongButton.addEventListener("click", async () => {
+  let name = songToDeleteInput.value.trim();
+  if (!name) return;
+
+  //Envia petició al servidor
+  const res = await fetch("/api/DeleteSong", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ data: name })
   });
 
   const message = await res.text();

@@ -136,6 +136,18 @@ app.post("/api/albums",  (req, res) => {
   });
 });
 
+//Eliminar Album
+app.delete("/api/DeleteAlbum",  (req, res) => {
+  const name = req.body.data;
+  db.run("DELETE FROM albums WHERE name = ?", [name], (error) => {
+    if (error) {
+      res.status(500).type("text").send(`Error: ${error.message}`);
+      return;
+    }
+    res.status(201).type("text").send(`Album eliminat: ${name}`);
+  });
+});
+
 /***** CANÇÓ *****/
 
 // Afegir Cançó
@@ -147,6 +159,18 @@ app.post("/api/AddSongs",  (req, res) => {
       return;
     }
     res.status(201).type("text").send(`Canço desada: ${name}`);
+  });
+});
+
+//Eliminar Artista
+app.delete("/api/DeleteSong",  (req, res) => {
+  const name = req.body.data;
+  db.run("DELETE FROM songs WHERE name = ?", [name], (error) => {
+    if (error) {
+      res.status(500).type("text").send(`Error: ${error.message}`);
+      return;
+    }
+    res.status(201).type("text").send(`Cançó eliminada: ${name}`);
   });
 });
 
