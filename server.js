@@ -30,7 +30,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       artist_id INTEGER,
-      FOREIGN KEY (artist_id) REFERENCES artists(id);
+      FOREIGN KEY (artist_id) REFERENCES artists(id)
     )
   `);
 
@@ -40,7 +40,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       album_id Integer,
-      FOREIGN KEY (album_id) REFERENCES album(id);
+      FOREIGN KEY (album_id) REFERENCES albums(id)
     )
   `);
 
@@ -72,6 +72,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 /********************* CREACIÓ API *********************/
 
+/***** ARTISTA *****/
+
 //Afegir Artista
 app.post("/api/AddArtist",  (req, res) => {
   const name = req.body.data;
@@ -96,6 +98,7 @@ app.delete("/api/DeleteArtist",  (req, res) => {
   });
 });
 
+//Consultar Artistes
 app.post("/api/artists",  (req, res) => {
   const table = req.body.data;
   db.all(`SELECT * FROM ${table} ORDER BY id DESC`, (err, rows) => {
@@ -106,6 +109,8 @@ app.post("/api/artists",  (req, res) => {
     res.json({ result: rows });
   });
 });
+
+/***** ALBUM *****/
 
 // Afegir Album
 app.post("/api/AddAlbum",  (req, res) => {
@@ -118,6 +123,20 @@ app.post("/api/AddAlbum",  (req, res) => {
     res.status(201).type("text").send(`Album desat: ${name}`);
   });
 });
+
+// Consultar Album
+app.post("/api/albums",  (req, res) => {
+  const table = req.body.data;
+  db.all(`SELECT * FROM ${table} ORDER BY id DESC`, (err, rows) => {
+    if (err){
+      return res.status(500).json({ error: err.message });
+    }
+    console.log(rows);
+    res.json({ result: rows });
+  });
+});
+
+/***** CANÇÓ *****/
 
 // Afegir Cançó
 app.post("/api/AddSongs",  (req, res) => {

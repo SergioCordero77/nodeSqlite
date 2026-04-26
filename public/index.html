@@ -36,17 +36,27 @@
       <h2>Afegir àlbum</h2>
       <input id="album-name" placeholder="Nom de l'àlbum" />
 
+      <h2>Afegir cançó</h2>
+      <input id="song-name" placeholder="Nom de la cançó" />
+
       <div class="row">
         <label for="artist-dropdown">Selecciona un artista:</label>
-
         <select id="artist-dropdown">
           <option value="">-- Tria un artista --</option>
+        </select>
+
+        <label for="artist-dropdown">Selecciona un album:</label>
+        <select id="album-dropdown">
+          <option value="">-- Tria un album --</option>
         </select>
       </div>
       
       <button id="add-album">Afegir Album</button>
+      <button id="add-song">Afegir Cançó</button>
+
       <p id="artist-output">Prem "Carregar artistes" per veure dades.</p>
     </section>
+
     <h2>Eliminar artista</h2>
       <input id="artist-delete" placeholder="Nom de l'artista" />
       <button id="delete-artist">Eliminar</button>
