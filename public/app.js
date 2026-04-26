@@ -1,9 +1,16 @@
 ﻿const form = document.getElementById("artist-form");
+
 const loadButton = document.getElementById("load-btn");
 const artistOutput = document.getElementById("artist-output");
 const artistNameInput = document.getElementById("artist-name");
+
+const artistToDeleteInput = document.getElementById("artist-delete");
 const deleteButton = document.getElementById("delete-artist");
+
 const artistDropdown = document.getElementById("artist-dropdown");
+
+const albumInput = document.getElementById("album-name");
+const addAlbumButton = document.getElementById("add-album");
 
 //AGEGIR ARTISTA
 form.addEventListener("submit", async (event) => {
@@ -57,7 +64,7 @@ loadButton.addEventListener("click", async () => {
 
 //ELIMINAR ARTISTA
 deleteButton.addEventListener("click", async () => {
-  let name = artistNameInput.value.trim();
+  let name = artistToDeleteInput.value.trim();
   if (!name) return;
 
   //Envia petició al servidor
@@ -73,8 +80,6 @@ deleteButton.addEventListener("click", async () => {
   artistOutput.textContent = message;
   if (res.ok) form.reset();
 });
-
-//Part a comprovar
 
 //Quan el select dropdown rep focus(quan es fa click o s'entra per teclat)
 artistDropdown.addEventListener("focus", async () => 
@@ -115,3 +120,26 @@ async function consultArtistTable(table){
   console.log("Received artist data:", json);
   return json.result;
 }
+
+//Afegir Album
+addAlbumButton.addEventListener("submit", async (event) => {
+  event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
+
+  const name = albumInput.value.trim();
+  const artist = artistDropdown.value;
+
+  if (!name || !artist) return;
+  
+  //Envia album al backend
+  const res = await fetch("/api/AddAlbum", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, artist })
+  });
+
+  const message = await res.text();
+  artistOutput.textContent = message;
+  if (res.ok) form.reset();
+});

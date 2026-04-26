@@ -33,6 +33,9 @@
         <button id="load-btn" type="button" class="btn-small">Carregar artistes</button>
       </div>
 
+      <h2>Afegir àlbum</h2>
+      <input id="album-name" placeholder="Nom de l'àlbum" />
+
       <div class="row">
         <label for="artist-dropdown">Selecciona un artista:</label>
 
@@ -40,11 +43,13 @@
           <option value="">-- Tria un artista --</option>
         </select>
       </div>
-
+      
+      <button id="add-album">Afegir Album</button>
       <p id="artist-output">Prem "Carregar artistes" per veure dades.</p>
     </section>
-  
-    <button id="delete-artist">Eliminar</button>
+    <h2>Eliminar artista</h2>
+      <input id="artist-delete" placeholder="Nom de l'artista" />
+      <button id="delete-artist">Eliminar</button>
   </main>
 
   <script src="app.js"></script>

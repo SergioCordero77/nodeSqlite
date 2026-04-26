@@ -13,12 +13,34 @@ fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new sqlite3.Database(dbPath);
 
-// Creem la taula i ens assegurem que hi hagi dades inicials.
+/******************** CREACIÓ DE TAULES ********************/
+
+// Creem la taula d'ARTISTES i ens assegurem que hi hagi dades inicials.
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS artists (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL
+    )
+  `);
+
+// Creem la taula d'ALBUMS i ens assegurem que hi hagi dades inicials.
+  db.run(`
+    CREATE TABLE IF NOT EXISTS albums (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      artist_id INTEGER,
+      FOREIGN KEY (artist_id) REFERENCES artists(id);
+    )
+  `);
+
+// Creem la taula de CANÇONS i ens assegurem que hi hagi dades inicials.
+  db.run(`
+    CREATE TABLE IF NOT EXISTS songs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      album_id Integer,
+      FOREIGN KEY (album_id) REFERENCES album(id);
     )
   `);
 
@@ -48,7 +70,9 @@ db.serialize(() => {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
+/********************* CREACIÓ API *********************/
 
+//Afegir Artista
 app.post("/api/AddArtist",  (req, res) => {
   const name = req.body.data;
   db.run("INSERT INTO artists (name) VALUES (?)", [name], (error) => {
@@ -60,7 +84,7 @@ app.post("/api/AddArtist",  (req, res) => {
   });
 });
 
-//Eliminar
+//Eliminar Artista
 app.delete("/api/DeleteArtist",  (req, res) => {
   const name = req.body.data;
   db.run("DELETE FROM artists WHERE name = ?", [name], (error) => {
@@ -80,6 +104,30 @@ app.post("/api/artists",  (req, res) => {
     }
     console.log(rows);
     res.json({ result: rows });
+  });
+});
+
+// Afegir Album
+app.post("/api/AddAlbum",  (req, res) => {
+  const { name, artist_id } = req.body.data;
+  db.run("INSERT INTO albums (name, artist_id) VALUES (?, ?)", [name, artist_id], (error) => {
+    if (error) {
+      res.status(500).type("text").send(`Error: ${error.message}`);
+      return;
+    }
+    res.status(201).type("text").send(`Album desat: ${name}`);
+  });
+});
+
+// Afegir Cançó
+app.post("/api/AddSongs",  (req, res) => {
+  const { name, album_id } = req.body.data;
+  db.run("INSERT INTO songs (name, album_id) VALUES (?, ?)", [name, album_id], (error) => {
+    if (error) {
+      res.status(500).type("text").send(`Error: ${error.message}`);
+      return;
+    }
+    res.status(201).type("text").send(`Canço desada: ${name}`);
   });
 });
 
