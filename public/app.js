@@ -22,6 +22,8 @@ const addSongButton = document.getElementById("add-song");
 const songToDeleteInput = document.getElementById("song-delete");
 const deleteSongButton = document.getElementById("delete-song");
 
+/***************** ARTISTA *****************/
+
 //AGEGIR ARTISTA
 form.addEventListener("submit", async (event) => {
   event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
@@ -91,23 +93,6 @@ deleteArtistButton.addEventListener("click", async () => {
   if (res.ok) form.reset();
 });
 
-//Quan el select dropdown rep focus(quan es fa click o s'entra per teclat)
-artistDropdown.addEventListener("focus", async () => 
-  {
-   artistDropdown.innerHTML=``;
-   console.log("Dropdown clicked");
-   //Petició al servidor per obtenir tots els artistes de la taula "artists"
-   let artistJson = await consultArtistTable("artists");
-   //Recorre tots els artistes rebuts del servidor un per un
-   artistJson.forEach(artist => 
-    {
-      const option = document.createElement("option");
-      option.value = artist.name;
-      option.textContent = artist.name;
-      artistDropdown.appendChild(option);
-    });
-});
-
 //CONSULTAR TAULA
 async function consultArtistTable(table){
    const res = await fetch("/api/artists", {
@@ -131,6 +116,46 @@ async function consultArtistTable(table){
   return json.result;
 }
 
+/***************** DDORPDOWN ARTISTA *****************/
+
+//Quan el select dropdown rep focus(quan es fa click o s'entra per teclat)
+artistDropdown.addEventListener("focus", async () => 
+  {
+   artistDropdown.innerHTML=``;
+   console.log("Dropdown clicked");
+   //Petició al servidor per obtenir tots els artistes de la taula "artists"
+   let artistJson = await consultArtistTable("artists");
+   //Recorre tots els artistes rebuts del servidor un per un
+   artistJson.forEach(artist => 
+    {
+      const option = document.createElement("option");
+      option.value = artist.name;
+      option.textContent = artist.name;
+      artistDropdown.appendChild(option);
+    });
+});
+
+/***************** DROPDOWN ALBUM *****************/
+
+//Quan el select dropdown rep focus(quan es fa click o s'entra per teclat)
+albumDropdown.addEventListener("focus", async () => 
+  {
+   albumDropdown.innerHTML=``;
+   console.log("Dropdown clicked");
+   //Petició al servidor per obtenir tots els artistes de la taula "albums"
+   let albumJson = await consultArtistTable("albums");
+   //Recorre tots els artistes rebuts del servidor un per un
+   abumJson.forEach(album => 
+    {
+      const option = document.createElement("option");
+      option.value = album.name;
+      option.textContent = album.name;
+      albumDropdown.appendChild(option);
+    });
+});
+
+/***************** ALBUM *****************/
+
 //AFEGIR ALBUM
 addAlbumButton.addEventListener("click", async (event) => {
   event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
@@ -146,7 +171,7 @@ addAlbumButton.addEventListener("click", async (event) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ name, artist_id: artist })
+    body: JSON.stringify({ data: name, artist })
   });
 
   const message = await res.text();
@@ -173,6 +198,8 @@ deleteAlbumButton.addEventListener("click", async () => {
   if (res.ok) form.reset();
 });
 
+/***************** CANÇÓ *****************/
+
 //AFEGIR CANÇÓ
 addSongButton.addEventListener("click", async (event) => {
   event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
@@ -188,7 +215,7 @@ addSongButton.addEventListener("click", async (event) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ name, album_id: album })
+    body: JSON.stringify({ data: name, album })
   });
 
   const message = await res.text();
