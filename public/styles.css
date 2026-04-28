@@ -116,3 +116,9 @@ button:hover {
   background: #f8fafc;
   border: 1px solid var(--border);
 }
+
+.buttons{
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+}
