@@ -114,13 +114,15 @@ app.post("/api/artists",  (req, res) => {
 
 // Afegir Album
 app.post("/api/AddAlbum",  (req, res) => {
-  const { name, artist_id } = req.body.data;
-  db.run("INSERT INTO albums (name, artist_id) VALUES (?, ?)", [name, artist_id], (error) => {
+  const albumName = req.body.albumName;
+  const artistName = req.body.artistName;
+
+  db.run("INSERT INTO albums (name, artist_id) VALUES (?, ?)", [albumName, artistName], (error) => {
     if (error) {
       res.status(500).type("text").send(`Error: ${error.message}`);
       return;
     }
-    res.status(201).type("text").send(`Album desat: ${name}`);
+    res.status(201).type("text").send(`Album desat: ${albumName}`);
   });
 });
 
@@ -152,13 +154,15 @@ app.delete("/api/DeleteAlbum",  (req, res) => {
 
 // Afegir Cançó
 app.post("/api/AddSongs",  (req, res) => {
+
   const { name, album_id } = req.body.data;
-  db.run("INSERT INTO songs (name, album_id) VALUES (?, ?)", [name, album_id], (error) => {
+
+  db.run("INSERT INTO songs (name, album_id) VALUES (?, ?)", [songName, albumName], (error) => {
     if (error) {
       res.status(500).type("text").send(`Error: ${error.message}`);
       return;
     }
-    res.status(201).type("text").send(`Canço desada: ${name}`);
+    res.status(201).type("text").send(`Canço desada: ${songName}`);
   });
 });
 

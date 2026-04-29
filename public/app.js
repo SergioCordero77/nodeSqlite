@@ -116,7 +116,7 @@ async function consultArtistTable(table){
   return json.result;
 }
 
-/***************** DDORPDOWN ARTISTA *****************/
+/***************** DORPDOWN ARTISTA *****************/
 
 //Quan el select dropdown rep focus(quan es fa click o s'entra per teclat)
 artistDropdown.addEventListener("focus", async () => 
@@ -133,7 +133,8 @@ artistDropdown.addEventListener("focus", async () =>
       option.textContent = artist.name;
       artistDropdown.appendChild(option);
     });
-});
+  });
+
 
 /***************** DROPDOWN ALBUM *****************/
 
@@ -145,10 +146,10 @@ albumDropdown.addEventListener("focus", async () =>
    //Petició al servidor per obtenir tots els artistes de la taula "albums"
    let albumJson = await consultArtistTable("albums");
    //Recorre tots els artistes rebuts del servidor un per un
-   abumJson.forEach(album => 
+   albumJson.forEach(album => 
     {
       const option = document.createElement("option");
-      option.value = album.name;
+      option.value = album.id;
       option.textContent = album.name;
       albumDropdown.appendChild(option);
     });
@@ -171,7 +172,7 @@ addAlbumButton.addEventListener("click", async (event) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ data: name, artist })
+    body: JSON.stringify({ albumName: name, artistName: artist })
   });
 
   const message = await res.text();
@@ -205,9 +206,9 @@ addSongButton.addEventListener("click", async (event) => {
   event.preventDefault();//per defecte recarregaria la pagina així que evitem això.
 
   const name = songInput.value.trim();
-  const album = albumDropdown.value;
+  const album_id = albumDropdown.value;
 
-  if (!name || !album) return;
+  if (!name || !album_id) return;
   
   //Envia cançó al backend
   const res = await fetch("/api/AddSongs", {
@@ -215,7 +216,7 @@ addSongButton.addEventListener("click", async (event) => {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ data: name, album })
+    body: JSON.stringify({ data: {name, album_id} })
   });
 
   const message = await res.text();
