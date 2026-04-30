@@ -113,17 +113,30 @@ app.post("/api/artists",  (req, res) => {
 /***** ALBUM *****/
 
 // Afegir Album
-app.post("/api/AddAlbum",  (req, res) => {
+app.post("/api/AddAlbum", (req, res) => {
   const albumName = req.body.albumName;
   const artistName = req.body.artistName;
 
-  db.run("INSERT INTO albums (name, artist_id) VALUES (?, ?)", [albumName, artistName], (error) => {
-    if (error) {
-      res.status(500).type("text").send(`Error: ${error.message}`);
-      return;
+  db.get(
+    "SELECT id FROM artists WHERE name = ?",
+    [artistName],
+    (err, row) => {
+      if (err) return res.status(500).send(err.message);
+      if (!row) return res.status(404).send("Artista no trobat");
+
+      const artist_id = row.id;
+
+      db.run(
+        "INSERT INTO albums (name, artist_id) VALUES (?, ?)",
+        [albumName, artist_id],
+        (error) => {
+          if (error) return res.status(500).send(error.message);
+
+          res.send(`Album desat: ${albumName}`);
+        }
+      );
     }
-    res.status(201).type("text").send(`Album desat: ${albumName}`);
-  });
+  );
 });
 
 // Consultar Album
@@ -157,16 +170,32 @@ app.post("/api/AddSongs",  (req, res) => {
 
   const { name, album_id } = req.body.data;
 
-  db.run("INSERT INTO songs (name, album_id) VALUES (?, ?)", [songName, albumName], (error) => {
+  db.run("INSERT INTO songs (name, album_id) VALUES (?, ?)", [name, album_id], (error) => {
     if (error) {
       res.status(500).type("text").send(`Error: ${error.message}`);
       return;
     }
-    res.status(201).type("text").send(`Canço desada: ${songName}`);
+    res.status(201).type("text").send(`Canço desada: ${name}`);
   });
 });
 
-//Eliminar Artista
+// Consultar cançons
+app.get("/api/songs", (req, res) => {
+  db.all(`
+    SELECT songs.id, songs.name, albums.name AS album
+    FROM songs
+    JOIN albums ON songs.album_id = albums.id
+    ORDER BY songs.id DESC
+  `, (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    res.json({ result: rows });
+  });
+});
+
+//Eliminar Cançó
 app.delete("/api/DeleteSong",  (req, res) => {
   const name = req.body.data;
   db.run("DELETE FROM songs WHERE name = ?", [name], (error) => {

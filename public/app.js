@@ -13,6 +13,8 @@ const albumDropdown = document.getElementById("album-dropdown");
 const albumInput = document.getElementById("album-name");
 const addAlbumButton = document.getElementById("add-album");
 
+const loadSongsButton = document.getElementById("load-songs");
+
 const albumToDeleteInput = document.getElementById("album-delete");
 const deleteAlbumButton = document.getElementById("delete-album");
 
@@ -222,6 +224,15 @@ addSongButton.addEventListener("click", async (event) => {
   const message = await res.text();
   artistOutput.textContent = message;
   if (res.ok) form.reset();
+});
+
+//CONSULTAR CANÇONS
+loadSongsButton.addEventListener("click", async () => {
+  const res = await fetch("/api/songs");
+
+  const json = await res.json();
+
+  artistOutput.textContent = JSON.stringify(json.result, null, 2);
 });
 
 //ELIMINAR CANÇÓ
