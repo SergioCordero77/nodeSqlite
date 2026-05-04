@@ -15,6 +15,10 @@ const addAlbumButton = document.getElementById("add-album");
 
 const loadSongsButton = document.getElementById("load-songs");
 
+const updateArtistButton = document.getElementById("update-artist");
+const artistOldInput = document.getElementById("artist-old");
+const artistNewInput = document.getElementById("artist-new");
+
 const albumToDeleteInput = document.getElementById("album-delete");
 const deleteAlbumButton = document.getElementById("delete-album");
 
@@ -74,6 +78,25 @@ loadButton.addEventListener("click", async () => {
   // Mostrem el resultat a la textarea de sortida
   artistOutput.textContent = JSON.stringify(json.result, null, 2);
 
+});
+
+//ACTUALITZAR ARTISTA
+updateArtistButton.addEventListener("click", async () => {
+  const oldName = artistOldInput.value.trim();
+  const newName = artistNewInput.value.trim();
+
+  if (!oldName || !newName) return;
+
+  const res = await fetch("/api/UpdateArtist", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ oldName, newName })
+  });
+
+  const message = await res.text();
+  artistOutput.textContent = message;
 });
 
 //ELIMINAR ARTISTA
@@ -140,21 +163,25 @@ artistDropdown.addEventListener("focus", async () =>
 
 /***************** DROPDOWN ALBUM *****************/
 
-//Quan el select dropdown rep focus(quan es fa click o s'entra per teclat)
-albumDropdown.addEventListener("focus", async () => 
-  {
-   albumDropdown.innerHTML=``;
-   console.log("Dropdown clicked");
-   //Petició al servidor per obtenir tots els artistes de la taula "albums"
-   let albumJson = await consultArtistTable("albums");
-   //Recorre tots els artistes rebuts del servidor un per un
-   albumJson.forEach(album => 
-    {
-      const option = document.createElement("option");
-      option.value = album.id;
-      option.textContent = album.name;
-      albumDropdown.appendChild(option);
-    });
+artistDropdown.addEventListener("change", async () => {
+  const artist = artistDropdown.value;
+
+  const res = await fetch("/api/albumsByArtist", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ artistName: artist })
+  });
+
+  const json = await res.json();
+
+  albumDropdown.innerHTML = '<option value="">-- Tria un album --</option>';
+
+  json.result.forEach(album => {
+    const option = document.createElement("option");
+    option.value = album.id;
+    option.textContent = album.name;
+    albumDropdown.appendChild(option);
+  });
 });
 
 /***************** ALBUM *****************/

@@ -89,18 +89,33 @@ app.post("/api/AddArtist",  (req, res) => {
 //Eliminar Artista
 app.delete("/api/DeleteArtist",  (req, res) => {
   const name = req.body.data;
-  db.run("DELETE FROM artists WHERE name = ?", [name], (error) => {
-    if (error) {
-      res.status(500).type("text").send(`Error: ${error.message}`);
-      return;
-    }
-    res.status(201).type("text").send(`Artista eliminat: ${name}`);
-  });
+  db.run(
+      "DELETE FROM songs WHERE album_id IN (SELECT id FROM albums WHERE artist_id = (SELECT id FROM artists WHERE name = ?))",
+      [name]
+    );
+
+    db.run(
+      "DELETE FROM albums WHERE artist_id = (SELECT id FROM artists WHERE name = ?)",
+      [name]
+    );
+
+    db.run("DELETE FROM artists WHERE name = ?", [name], (error) => {
+      if (error) {
+        res.status(500).type("text").send(`Error: ${error.message}`);
+        return;
+      }
+      res.status(201).type("text").send(`Artista eliminat: ${name}`);
+    });
 });
 
 //Consultar Artistes
 app.post("/api/artists",  (req, res) => {
   const table = req.body.data;
+
+  if (!["artists", "albums"].includes(table)) {
+    return res.status(400).json({ error: "Invalid table" });
+  }
+
   db.all(`SELECT * FROM ${table} ORDER BY id DESC`, (err, rows) => {
     if (err){
       return res.status(500).json({ error: err.message });
@@ -108,6 +123,20 @@ app.post("/api/artists",  (req, res) => {
     console.log(rows);
     res.json({ result: rows });
   });
+});
+
+//Actualitzar Artista
+app.put("/api/UpdateArtist", (req, res) => {
+  const { oldName, newName } = req.body;
+
+  db.run(
+    "UPDATE artists SET name = ? WHERE name = ?",
+    [newName, oldName],
+    function (err) {
+      if (err) return res.status(500).send(err.message);
+      res.send("Artista actualitzat");
+    }
+  );
 });
 
 /***** ALBUM *****/
@@ -139,21 +168,33 @@ app.post("/api/AddAlbum", (req, res) => {
   );
 });
 
-// Consultar Album
-app.post("/api/albums",  (req, res) => {
-  const table = req.body.data;
-  db.all(`SELECT * FROM ${table} ORDER BY id DESC`, (err, rows) => {
-    if (err){
-      return res.status(500).json({ error: err.message });
+// Consultar albums per artista
+app.post("/api/albumsByArtist", (req, res) => {
+  const artistName = req.body.artistName;
+
+  db.get(
+    "SELECT id FROM artists WHERE name = ?",
+    [artistName],
+    (err, artist) => {
+      if (err) return res.status(500).send(err.message);
+      if (!artist) return res.json({ result: [] });
+
+      db.all(
+        "SELECT * FROM albums WHERE artist_id = ?",
+        [artist.id],
+        (err, rows) => {
+          if (err) return res.status(500).send(err.message);
+          res.json({ result: rows });
+        }
+      );
     }
-    console.log(rows);
-    res.json({ result: rows });
-  });
+  );
 });
 
 //Eliminar Album
 app.delete("/api/DeleteAlbum",  (req, res) => {
   const name = req.body.data;
+  db.run("DELETE FROM songs WHERE album_id = (SELECT id FROM albums WHERE name = ?)", [name]);
   db.run("DELETE FROM albums WHERE name = ?", [name], (error) => {
     if (error) {
       res.status(500).type("text").send(`Error: ${error.message}`);
